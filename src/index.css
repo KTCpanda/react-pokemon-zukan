@@ -66,3 +66,18 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+@media (max-width: 600px) {
+  h1 {
+    font-size: 2.4em;
+  }
+}
+ /* src/index.css */
+@import "tailwindcss";
+
+@theme {
+  --font-family-sans: "Noto Sans JP", "sans-serif";
+  --color-brand: #ffcb05;
+  --color-brand-dark: #b98c00;
+}
+
+
