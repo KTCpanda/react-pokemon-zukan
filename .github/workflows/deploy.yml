@@ -3,56 +3,56 @@ name: Deploy GitHub Pages
 on:
   push:
     branches: ['main', 'master']
-
-  permissions:
-    contents: read
-    pages: write
-    id-token: write 
-
+  # 手動で実行できるようにする設定
   workflow_dispatch:
 
+# ワークフロー全体に適用する権限設定
 permissions:
   contents: read
   pages: write
   id-token: write
 
+# 同時に複数のデプロイが走らないようにする設定
 concurrency:
   group: 'pages'
   cancel-in-progress: true
 
 jobs:
+  # ビルド用のジョブ
   build:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 20
       - name: Install dependencies
-        run: npm install
+        # npm ci を使うと package-lock.json に基づいて高速にインストールされます
+        run: npm ci
       - name: Build
-        run: npm ci && npm run build
+        # PUBLIC_URL を設定してビルドを実行
+        run: npm run build
         env:
           PUBLIC_URL: /react-pokemon-zukan
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
+          # ビルド成果物が出力されるフォルダを指定
           path: './dist'
 
+  # デプロイ用のジョブ
   deploy:
+    # build ジョブが終わってから実行される
+    needs: build
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
-    needs: build
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v2
+        uses: actions/deploy-pages@v4 # v2からv4に更新
