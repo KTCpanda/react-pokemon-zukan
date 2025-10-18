@@ -7,8 +7,12 @@ import type { PokemonWithJapaneseName } from '../api/pokemonWithJapaneseName';
 import PokemonCard from '../components/PokemonCard';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
+import { pokemonTypesMap } from '../pokemonTypesMap';
 
 const PokemonList: React.FC = () => {
+  const [searchTerm, setSearchTerm] = React.useState('');
+  const [selectedType, setSelectedType] = React.useState('');
+
   const {
     data,
     fetchNextPage,
@@ -27,6 +31,28 @@ const PokemonList: React.FC = () => {
       return undefined;
     },
   });
+
+  const allPokemon = React.useMemo(() => {
+    return data?.pages.flatMap((page) => page.results) ?? [];
+  }, [data]);
+
+  const filteredPokemon = React.useMemo(() => {
+    return allPokemon.filter((pokemon) => {
+      const searchTermLower = searchTerm.toLowerCase();
+      const nameMatch = pokemon.japaneseName.toLowerCase().includes(searchTermLower);
+      const numberMatch = pokemon.number.includes(searchTerm);
+
+      const typeInfo = pokemonTypesMap.find((t) => t.jaType === selectedType);
+      const englishType = typeInfo ? typeInfo.type : '';
+
+      // The types property on pokemon is not complete, so we can't filter by type yet.
+      // This will be addressed in a future step.
+      // For now, let's just filter by name and number.
+      const typeMatch = selectedType === '' || (pokemon as any).types?.some((t: any) => t.type.name === englishType);
+
+      return (nameMatch || numberMatch) && typeMatch;
+    });
+  }, [allPokemon, searchTerm, selectedType]);
 
   const loadMoreRef = useRef<HTMLDivElement>(null);
 
@@ -52,15 +78,40 @@ const PokemonList: React.FC = () => {
 
   return (
     <div className="p-4">
+      <div className="mb-4 flex flex-col sm:flex-row gap-4 p-4 bg-gray-100 rounded-lg">
+        <input
+          type="text"
+          placeholder="図鑑No. or 名前で検索"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="border p-2 rounded-md w-full sm:w-1/2"
+        />
+        <select
+          value={selectedType}
+          onChange={(e) => setSelectedType(e.target.value)}
+          className="border p-2 rounded-md w-full sm:w-1/2"
+        >
+          <option value="">すべてのタイプ</option>
+          {pokemonTypesMap.map((type) => (
+            <option key={type.type} value={type.jaType}>
+              {type.jaType}
+            </option>
+          ))}
+        </select>
+      </div>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-        {data?.pages.map((page) =>
-          page.results.map((pokemon: PokemonWithJapaneseName) => (
-            <PokemonCard key={pokemon.name} pokemon={pokemon} />
-          ))
-        )}
+        {filteredPokemon.map((pokemon: PokemonWithJapaneseName) => (
+          <PokemonCard key={pokemon.name} pokemon={pokemon} />
+        ))}
       </div>
       <div ref={loadMoreRef} className="h-20 flex items-center justify-center">
-        {isFetchingNextPage ? <Loader /> : hasNextPage ? '続きを読み込む' : ''}
+        {isFetchingNextPage ? (
+          <Loader />
+        ) : hasNextPage && filteredPokemon.length > 0 ? (
+          '続きを読み込む'
+        ) : (
+          ''
+        )}
       </div>
     </div>
   );
