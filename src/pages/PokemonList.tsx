@@ -42,11 +42,9 @@ const PokemonList: React.FC = () => {
       const nameMatch = pokemon.japaneseName.toLowerCase().includes(searchTermLower);
       const numberMatch = pokemon.number.includes(searchTerm);
 
-      const typeInfo = pokemonTypesMap.find((t) => t.jaType === selectedType);
-      const englishType = typeInfo ? typeInfo.type : '';
-
-      //名前と図鑑番号で絞り込み
-      const typeMatch = selectedType === '' || (pokemon as any).types?.some((t: any) => t.type.name === englishType);
+  const typeInfo = pokemonTypesMap.find((t) => t.jaType === selectedType);
+  const englishType = typeInfo ? typeInfo.type : '';
+  const typeMatch = selectedType === '' || pokemon.types.includes(englishType);
 
       return (nameMatch || numberMatch) && typeMatch;
     });
@@ -79,7 +77,7 @@ const PokemonList: React.FC = () => {
       <div className="mb-4 flex flex-col sm:flex-row gap-4 p-4 bg-gray-100 rounded-lg">
         <input
           type="text"
-          placeholder="図鑑No. or 名前で検索"
+          placeholder="図鑑No. or 名前で検索でもこれ壊れてます一旦諦め"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="border p-2 rounded-md w-full sm:w-1/2"

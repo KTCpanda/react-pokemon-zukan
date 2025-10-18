@@ -11,6 +11,7 @@ export type PokemonWithJapaneseName = {
   url: string;           // ポケモンの詳細情報を取得するためのURL
   japaneseName: string;  // ポケモンの日本語名
   number: string;        // ポケモンの図鑑番号
+  types: string[];       // ポケモンのタイプ（英語）
 };
 
 // 日本語名を含むポケモンリストの結果を表す型
@@ -41,16 +42,7 @@ export const fetchPokemonListWithJapaneseNames = async (offset: number = 0, limi
         ...pokemon,
         japaneseName,
         number: pokemonDetails.id.toString(),
-        types: pokemonDetails.types.map((t) => ({
-          type: {
-            name: t.type.name
-          }
-        })),
-        abilities: pokemonDetails.abilities.map((a) => ({
-          ability: {
-            name: a.ability.name
-          }
-        }))
+        types: pokemonDetails.types.map((t) => t.type.name),
       };
     })
   );
