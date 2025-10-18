@@ -45,9 +45,7 @@ const PokemonList: React.FC = () => {
       const typeInfo = pokemonTypesMap.find((t) => t.jaType === selectedType);
       const englishType = typeInfo ? typeInfo.type : '';
 
-      // The types property on pokemon is not complete, so we can't filter by type yet.
-      // This will be addressed in a future step.
-      // For now, let's just filter by name and number.
+      //名前と図鑑番号で絞り込み
       const typeMatch = selectedType === '' || (pokemon as any).types?.some((t: any) => t.type.name === englishType);
 
       return (nameMatch || numberMatch) && typeMatch;
