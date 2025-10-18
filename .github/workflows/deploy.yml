@@ -6,19 +6,17 @@ on:
   # 手動で実行できるようにする設定
   workflow_dispatch:
 
-# ワークフロー全体に適用する権限設定
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# 同時に複数のデプロイが走らないようにする設定
 concurrency:
   group: 'pages'
   cancel-in-progress: true
 
 jobs:
-  # ビルド用のジョブ
+  
   build:
     runs-on: ubuntu-latest
     steps:
@@ -29,10 +27,10 @@ jobs:
         with:
           node-version: 20
       - name: Install dependencies
-        # npm ci を使うと package-lock.json に基づいて高速にインストールされます
+       
         run: npm ci
       - name: Build
-        # PUBLIC_URL を設定してビルドを実行
+        
         run: npm run build
         env:
           PUBLIC_URL: /react-pokemon-zukan
@@ -41,12 +39,12 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # ビルド成果物が出力されるフォルダを指定
+          
           path: './dist'
 
-  # デプロイ用のジョブ
+  #
   deploy:
-    # build ジョブが終わってから実行される
+    
     needs: build
     environment:
       name: github-pages
