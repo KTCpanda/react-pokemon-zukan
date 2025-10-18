@@ -1,6 +1,6 @@
 // src/api/pokemonDetail.ts
-import { FlavorTextEntry, PokemonAbility, PokemonStat, PokemonType } from './pokemon.type';
-import { Name } from './common.type';
+import type { FlavorTextEntry, PokemonAbility, PokemonStat, PokemonType } from './pokemon.type';
+import type { Name } from './common.type';
 
 type PokemonDetail = {
   id: number;

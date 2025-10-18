@@ -1,6 +1,6 @@
 // src/api/pokemon.type.ts
 
-import { Name, NamedAPIResource } from './common.type';
+import type { Name, NamedAPIResource } from './common.type';
 
 export interface PokemonSprites {
   front_default: string | null;
@@ -11,11 +11,6 @@ export interface PokemonSprites {
   back_shiny: string | null;
   back_female: string | null;
   back_shiny_female: string | null;
-}
-
-export interface PokemonType {
-  slot: number;
-  type: NamedAPIResource;
 }
 
 export interface PokemonAbility {
